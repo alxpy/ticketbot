@@ -1,0 +1,30 @@
+{
+  "name": "ticketbot",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon src/watchServer.js config/local.json",
+    "precommit": "lint-staged",
+    "pretty": "prettier --write ./src/**/*.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "micro": "^9.1.4",
+    "request": "^2.85.0",
+    "uuid": "^3.2.1"
+  },
+  "devDependencies": {
+    "husky": "^0.14.3",
+    "lint-staged": "^7.0.3",
+    "nodemon": "^1.17.3",
+    "prettier": "^1.11.1"
+  },
+  "lint-staged": {
+    "*.{js,json,css,md}": [
+      "prettier --write",
+      "git add"
+    ]
+  }
+}
