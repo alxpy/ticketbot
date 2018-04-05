@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon src/watchServer.js config/local.json",
+    "server": "nodemon src/watchServer.js config/local.json",
+    "bot": "nodemon src/botServer.js config/local.json",
     "precommit": "lint-staged",
     "pretty": "prettier --write ./src/**/*.js"
   },
@@ -22,9 +23,6 @@
     "prettier": "^1.11.1"
   },
   "lint-staged": {
-    "*.{js,json,css,md}": [
-      "prettier --write",
-      "git add"
-    ]
+    "*.{js,json,css,md}": ["prettier --write", "git add"]
   }
 }
