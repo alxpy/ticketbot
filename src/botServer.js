@@ -1,8 +1,10 @@
+require("dotenv").config();
 const micro = require("micro");
 const path = require("path");
 const { initConfig } = require("./config");
 const config = initConfig(path.resolve(__dirname, `../${process.argv[2]}`));
 const { addTask, getTasks, start } = require("./scheduler");
+const { createSearch } = require("./bot");
 
 const server = micro(async (req, res) => {
   const method = req.method;
@@ -13,8 +15,7 @@ const server = micro(async (req, res) => {
     if (url === "/new_message") {
       const text = data.message.text;
       if (text == "/search") {
-        console.log(data.message);
-        console.log("starting ticket search");
+        createSearch(data.message.chat.id);
       }
       res.end();
       return;
