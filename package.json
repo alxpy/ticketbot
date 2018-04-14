@@ -7,7 +7,8 @@
     "server": "nodemon src/watchServer.js config/local.json",
     "bot": "nodemon src/botServer.js config/local.json",
     "precommit": "lint-staged",
-    "pretty": "prettier --write ./src/**/*.js"
+    "pretty": "prettier --write ./src/**/*.js",
+    "test": "jest"
   },
   "author": "",
   "license": "ISC",
@@ -19,9 +20,11 @@
   },
   "devDependencies": {
     "husky": "^0.14.3",
+    "jest": "^22.4.3",
     "lint-staged": "^7.0.3",
     "nodemon": "^1.17.3",
-    "prettier": "^1.11.1"
+    "prettier": "^1.11.1",
+    "tmp": "0.0.33"
   },
   "lint-staged": {
     "*.{js,json,css,md}": ["prettier --write", "git add"]
