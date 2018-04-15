@@ -2,11 +2,12 @@ const fs = require("fs");
 const uuid = require("uuid");
 let tasksFilePath = null;
 
-function newTask(from, to, date, time, options) {
+function newTask(from, to, date, chatId, time, options) {
   return {
     from,
     to,
     date,
+    chatId,
     time: time || "00:00",
     stop: false,
     id: uuid.v4()
@@ -42,7 +43,7 @@ async function writeTasks(tasks) {
   });
 }
 
-async function addTask(from, to, date, time, options) {
+async function addTask({ from, to, date, chatId, time, options }) {
   if (!from) {
     throw new Error("from is required");
   }
@@ -52,7 +53,10 @@ async function addTask(from, to, date, time, options) {
   if (!date) {
     throw new Error("date is required");
   }
-  const task = newTask(from, to, date, time, options);
+  if (!chatId) {
+    throw new Error("chatId is required");
+  }
+  const task = newTask(from, to, date, chatId, time, options);
   const storedTasks = await readTasks();
   storedTasks.push(task);
   await writeTasks(storedTasks);

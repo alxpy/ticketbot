@@ -4,10 +4,10 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "server": "nodemon src/watchServer.js config/local.json",
     "bot": "nodemon src/botServer.js config/local.json",
     "precommit": "lint-staged",
     "pretty": "prettier --write ./src/**/*.js",
+    "webhook": "node etc/setWebhook.js",
     "test": "jest"
   },
   "author": "",

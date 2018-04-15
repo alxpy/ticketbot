@@ -1,10 +1,11 @@
 require("dotenv").config();
+const BOT_NAME = process.env.BOT_NAME;
 const micro = require("micro");
 const path = require("path");
 const { initConfig } = require("./config");
 const config = initConfig(path.resolve(__dirname, `../${process.argv[2]}`));
 const { addTask, getTasks, start } = require("./scheduler");
-const { createSearch } = require("./bot");
+const { hello, watch, handleDialog } = require("./bot");
 
 const server = micro(async (req, res) => {
   const method = req.method;
@@ -13,9 +14,27 @@ const server = micro(async (req, res) => {
   if (method === "POST") {
     const data = await micro.json(req);
     if (url === "/new_message") {
-      const text = data.message.text;
-      if (text == "/search") {
-        createSearch(data.message.chat.id);
+      console.log(`new message ${JSON.stringify(data)}`);
+      if (data.message) {
+        const text = data.message.text;
+        if (text == "/hello") {
+          await hello(data.message);
+        }
+        if (text == "/watch") {
+          await watch(data.message);
+        }
+        if (
+          data.message.reply_to_message &&
+          data.message.reply_to_message.from.username === BOT_NAME
+        ) {
+          await handleDialog(data.message);
+        }
+      }
+      if (data.callback_query) {
+        await handleDialog(
+          data.callback_query.message,
+          JSON.parse(data.callback_query.data)
+        );
       }
       res.end();
       return;
