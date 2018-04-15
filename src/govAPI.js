@@ -9,4 +9,19 @@ async function suggestCity(term) {
   return JSON.parse(result);
 }
 
-module.exports = { suggestCity };
+async function checkTrain(trainData) {
+  const options = {
+    method: "POST",
+    uri: `${API}/train_search/`,
+    formData: {
+      from: trainData.from,
+      to: trainData.to,
+      date: trainData.date,
+      time: trainData.time || "00:00"
+    }
+  };
+  const result = await rp(options);
+  return JSON.parse(result);
+}
+
+module.exports = { suggestCity, checkTrain };

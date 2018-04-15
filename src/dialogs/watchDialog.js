@@ -1,10 +1,11 @@
 const { cmd, deleteMessage } = require("../telegramAPI");
-const { suggestCity } = require("../govAPI");
+const { suggestCity, checkTrain } = require("../govAPI");
 
 const STAGE0_QUESTION = "Отведь мне, откуда будем ехадь?";
 const STAGE1_QUESTION = "Выбериде конгредный пункт:";
 const STAGE2_QUESTION = "Отведь мне, куда будем ехадь?";
-const STAGE4_QUESTION = "Отведь мне, Когда будем ехадь? Формат - ГГГГ-ДД-ММ";
+const STAGE4_QUESTION = "Отведь мне, Когда будем ехадь? Формат - ГГГГ-ММ-ДД";
+const STAGE5_QUESTION = "Выбериде боизд:";
 
 class WatchDialog {
   constructor(chatId, resultCb) {
@@ -14,11 +15,10 @@ class WatchDialog {
     this.done = false;
     this.stage0();
     this.stage1 = this.stage1.bind(this);
-    this.data = {};
+    this.data = { options: {} };
   }
 
   async stage0() {
-    console.log("stage 0");
     await cmd("sendMessage", {
       chat_id: this.chatId,
       text: STAGE0_QUESTION
@@ -111,7 +111,76 @@ class WatchDialog {
   }
 
   async stage5(msg) {
-    console.log(msg.text);
+    this.data.date = msg.text;
+    const result = await checkTrain({
+      from: this.data.from,
+      to: this.data.to,
+      date: this.data.date
+    });
+    if (result.data.list.length === 0) {
+      await cmd("sendMessage", {
+        chat_id: this.chatId,
+        text: "По такому набравлению поездов нинашол"
+      });
+      this.stage = 0;
+      this.done = true;
+      this.resultCb();
+      return;
+    }
+    const inlineKeyboard = result.data.list.map(train => {
+      return [
+        {
+          text: `${train.num} ${train.from.time} - ${train.to.time}`,
+          callback_data: JSON.stringify({
+            dialog: "watch",
+            action: "train",
+            value: train.num
+          })
+        }
+      ];
+    });
+
+    inlineKeyboard.unshift([
+      {
+        text: "Выбрадь взе поезда",
+        callback_data: JSON.stringify({
+          dialog: "watch",
+          action: "train",
+          value: "*"
+        })
+      }
+    ]);
+
+    await cmd("sendMessage", {
+      chat_id: this.chatId,
+      text: STAGE5_QUESTION,
+      reply_markup: JSON.stringify({ inline_keyboard: inlineKeyboard })
+    });
+    this.stage = 6;
+  }
+
+  async stage6(msg, data) {
+    if (!data || data.dialog !== "watch" || data.action !== "train") {
+      return;
+    }
+    if (data.value) {
+      this.data.options.trains = [data.value];
+    }
+    this.resultCb(null, {
+      from: this.data.from,
+      to: this.data.to,
+      date: this.data.date,
+      chatId: this.chatId,
+      options: this.data.options
+    });
+    await deleteMessage(this.chatId, msg.message_id);
+    await cmd("sendMessage", {
+      chat_id: this.chatId,
+      text: `Будем искать билеты ${this.data.rawFrom} - ${this.data.rawTo} на ${
+        this.data.date
+      }. Поезда - ${this.data.options.trains.join(", ")}`
+    });
+    this.done = true;
   }
 }
 

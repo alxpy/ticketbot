@@ -1,5 +1,7 @@
 const fs = require("fs");
 const uuid = require("uuid");
+const path = require("path");
+const mkdirp = require("mkdirp");
 let tasksFilePath = null;
 
 function newTask(from, to, date, chatId, time, options) {
@@ -10,6 +12,7 @@ function newTask(from, to, date, chatId, time, options) {
     chatId,
     time: time || "00:00",
     stop: false,
+    options,
     id: uuid.v4()
   };
 }
@@ -28,6 +31,21 @@ async function readTasks() {
         return res(JSON.parse(dataStr));
       }
       return res([]);
+    });
+  });
+}
+
+async function fileExists(filePath) {
+  return new Promise((res, rej) => {
+    fs.exists(filePath, exists => res(exists));
+  });
+}
+
+async function writeFile(filePath) {
+  return new Promise((res, rej) => {
+    fs.writeFile(filePath, JSON.stringify([]), { flag: "wx" }, err => {
+      if (err) return rej(err);
+      res();
     });
   });
 }
@@ -57,7 +75,7 @@ async function addTask({ from, to, date, chatId, time, options }) {
     throw new Error("chatId is required");
   }
   const task = newTask(from, to, date, chatId, time, options);
-  const storedTasks = await readTasks();
+  const storedTasks = await getTasks();
   storedTasks.push(task);
   await writeTasks(storedTasks);
   console.log(`task added ${task.id}`);
@@ -65,11 +83,23 @@ async function addTask({ from, to, date, chatId, time, options }) {
 }
 
 async function getTasks() {
-  return await readTasks();
+  const exists = await fileExists(tasksFilePath);
+  if (exists) {
+    return await readTasks();
+  }
+  await writeFile(tasksFilePath);
+  return [];
+}
+
+async function setTasks(tasks) {
+  await writeTasks(tasks);
 }
 
 function init(tasksPath) {
+  if (tasksPath) {
+    console.log(`Tasks file ${tasksPath}`);
+  }
   tasksFilePath = tasksPath;
 }
 
-module.exports = { init, getTasks, addTask };
+module.exports = { init, getTasks, addTask, setTasks };

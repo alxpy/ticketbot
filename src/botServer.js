@@ -5,7 +5,14 @@ const path = require("path");
 const { initConfig } = require("./config");
 const config = initConfig(path.resolve(__dirname, `../${process.argv[2]}`));
 const { addTask, getTasks, start } = require("./scheduler");
-const { hello, watch, handleDialog } = require("./bot");
+const {
+  hello,
+  watch,
+  handleDialog,
+  taskList,
+  clearTaskList
+} = require("./bot");
+const { init } = require("./task");
 
 const server = micro(async (req, res) => {
   const method = req.method;
@@ -17,11 +24,17 @@ const server = micro(async (req, res) => {
       console.log(`new message ${JSON.stringify(data)}`);
       if (data.message) {
         const text = data.message.text;
-        if (text == "/hello") {
+        if (text && text.startsWith("/hello")) {
           await hello(data.message);
         }
-        if (text == "/watch") {
+        if (text && text.startsWith("/pewpew")) {
           await watch(data.message);
+        }
+        if (text && text.startsWith("/list")) {
+          await taskList(data.message);
+        }
+        if (text && text.startsWith("/clear")) {
+          await clearTaskList(data.message);
         }
         if (
           data.message.reply_to_message &&
@@ -46,4 +59,5 @@ const server = micro(async (req, res) => {
 const { host, port } = config.botServer;
 server.listen(port, host, () => {
   console.log(`bot server is listening on ${host} ${port}`);
+  init(config.botServer.taskFile);
 });
