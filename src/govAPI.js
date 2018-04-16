@@ -24,4 +24,9 @@ async function checkTrain(trainData) {
   return JSON.parse(result);
 }
 
-module.exports = { suggestCity, checkTrain };
+function ticketLink(ticket) {
+  return `https://booking.uz.gov.ua/ru/?from=${ticket.from}&to=${
+    ticket.to
+  }&date=${ticket.date}&time=${encodeURIComponent(ticket.time)}&url=train-list`;
+}
+module.exports = { suggestCity, checkTrain, ticketLink };

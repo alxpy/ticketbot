@@ -1,6 +1,7 @@
 const { cmd } = require("./telegramAPI");
 const WatchDialog = require("./dialogs/watchDialog");
 const { addTask, getTasks, setTasks } = require("./task");
+const { ticketLink } = require("./govAPI");
 
 async function hello(message) {
   const chatId = message.chat.id;
@@ -74,4 +75,74 @@ async function clearTaskList(message) {
   });
 }
 
-module.exports = { hello, watch, handleDialog, taskList, clearTaskList };
+async function sendTicketMessage(task, trainData) {
+  await cmd("sendMessage", {
+    chat_id: task.chatId,
+    parse_mode: "HTML",
+    text: `
+<b>Ездь мезда!!!</b>
+<b>${trainData.num} ${trainData.from.station} - ${trainData.to.station} ${
+      task.date
+    }</b>
+<b>${trainData.types.map(t => `${t.title} - ${t.places}`).join(", ")}</b>
+<a href="${ticketLink(task)}">КУБИДЬ БИЛЕД!</a>
+    `
+  });
+}
+
+const hasTrainMsgs = {};
+async function hasTrain(task, trainData) {
+  console.log(`Has tickets ${task.id}`);
+  const chatId = task.chatId;
+  if (!hasTrainMsgs[chatId]) {
+    hasTrainMsgs[chatId] = {};
+  }
+  if (!hasTrainMsgs[chatId][task.id]) {
+    hasTrainMsgs[chatId][task.id] = {
+      times: 1,
+      hasTickets: true
+    };
+    sendTicketMessage(task, trainData);
+  } else {
+    const ticketMsg = hasTrainMsgs[chatId][task.id];
+    if (!ticketMsg.hasTickets) {
+      sendTicketMessage(task, trainData);
+    }
+    ticketMsg.times = ticketMsg.times + 1;
+    ticketMsg.hasTickets = true;
+  }
+}
+
+async function hasNoTrain(task) {
+  console.log(`Had no tickets ${task.id}`);
+  const chatId = task.chatId;
+  if (!hasTrainMsgs[chatId]) {
+    hasTrainMsgs[chatId] = {};
+  }
+  if (!hasTrainMsgs[chatId][task.id]) {
+    hasTrainMsgs[chatId][task.id] = {
+      times: 1,
+      hasTickets: false
+    };
+  } else {
+    const ticketMsg = hasTrainMsgs[chatId][task.id];
+    if (ticketMsg.hasTickets) {
+      await cmd("sendMessage", {
+        chat_id: chatId,
+        text: `Уже мезд на ${task.trains.join(", ")} нет`
+      });
+    }
+    ticketMsg.times = ticketMsg.times + 1;
+    ticketMsg.hasTickets = false;
+  }
+}
+
+module.exports = {
+  hello,
+  watch,
+  handleDialog,
+  taskList,
+  clearTaskList,
+  hasTrain,
+  hasNoTrain
+};

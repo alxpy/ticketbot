@@ -4,14 +4,17 @@ const micro = require("micro");
 const path = require("path");
 const { initConfig } = require("./config");
 const config = initConfig(path.resolve(__dirname, `../${process.argv[2]}`));
-const { addTask, getTasks, start } = require("./scheduler");
+const { schedule } = require("./scheduler");
 const {
   hello,
   watch,
   handleDialog,
   taskList,
-  clearTaskList
+  clearTaskList,
+  hasTrain,
+  hasNoTrain
 } = require("./bot");
+const { checkTrain } = require("./govAPI");
 const { init } = require("./task");
 
 const server = micro(async (req, res) => {
@@ -56,8 +59,21 @@ const server = micro(async (req, res) => {
 
   return "bot server is online";
 });
+
+async function pingTrain(task) {
+  const result = await checkTrain(task);
+  const train = task.options.trains[0];
+  const resultTrain = result.data.list.find(({ num }) => num === train);
+  if (resultTrain.types.length) {
+    hasTrain(task, resultTrain);
+  } else {
+    hasNoTrain(task);
+  }
+}
+
 const { host, port } = config.botServer;
 server.listen(port, host, () => {
   console.log(`bot server is listening on ${host} ${port}`);
   init(config.botServer.taskFile);
+  schedule(async task => await pingTrain(task), config.botServer.timeout);
 });
