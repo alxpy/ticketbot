@@ -1,5 +1,6 @@
 const { cmd } = require("./telegramAPI");
 const WatchDialog = require("./dialogs/watchDialog");
+const TaskListDialog = require("./dialogs/taskListDialog");
 const { addTask, getTasks, setTasks } = require("./task");
 const { ticketLink } = require("./govAPI");
 
@@ -42,21 +43,10 @@ async function handleDialog(message, data) {
 
 async function taskList(message) {
   const chatId = message.chat.id;
-  const tasks = await getTasks();
-  const chatTasks = tasks.filter(task => task.chatId === chatId);
-  if (chatTasks.length) {
-    await cmd("sendMessage", {
-      chat_id: chatId,
-      text: `Ищем такие поезда:\n${chatTasks
-        .map(task => task.options.trains.join(", "))
-        .join("|")}`
-    });
-  } else {
-    await cmd("sendMessage", {
-      chat_id: chatId,
-      text: "Зейчаз ничего не ищем"
-    });
-  }
+  dialogs[chatId] = new TaskListDialog(chatId, options => {
+    console.log("task list dialog", options);
+    delete dialogs[chatId];
+  });
 }
 
 async function clearTaskList(message) {
@@ -84,13 +74,18 @@ async function sendTicketMessage(task, trainData) {
 <b>${trainData.num} ${trainData.from.station} - ${trainData.to.station} ${
       task.date
     }</b>
-<b>${trainData.types.map(t => `${t.title} - ${t.places}`).join(", ")}</b>
+${trainData.types.map(t => `${t.title} - ${t.places}`).join("\n")}
 <a href="${ticketLink(task)}">КУБИДЬ БИЛЕД!</a>
     `
   });
 }
 
 const hasTrainMsgs = {};
+async function stopSearchTrain(task) {
+  if (hasTrainMsgs[task.chatId]) {
+    delete hasTrainMsgs[task.chatId][task.id];
+  }
+}
 async function hasTrain(task, trainData) {
   console.log(`Has tickets ${task.id}`);
   const chatId = task.chatId;
@@ -144,5 +139,6 @@ module.exports = {
   taskList,
   clearTaskList,
   hasTrain,
-  hasNoTrain
+  hasNoTrain,
+  stopSearchTrain
 };

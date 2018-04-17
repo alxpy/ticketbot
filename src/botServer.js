@@ -12,7 +12,8 @@ const {
   taskList,
   clearTaskList,
   hasTrain,
-  hasNoTrain
+  hasNoTrain,
+  stopSearchTrain
 } = require("./bot");
 const { checkTrain } = require("./govAPI");
 const { init } = require("./task");
@@ -61,6 +62,10 @@ const server = micro(async (req, res) => {
 });
 
 async function pingTrain(task) {
+  if (task.stop) {
+    stopSearchTrain(task);
+    return;
+  }
   const result = await checkTrain(task);
   const train = task.options.trains[0];
   const resultTrain = result.data.list.find(({ num }) => num === train);

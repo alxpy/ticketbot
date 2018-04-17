@@ -13,7 +13,7 @@ function newTask(from, to, date, chatId, time, options) {
     time: time || "00:00",
     stop: false,
     options,
-    id: uuid.v4()
+    id: uuid.v4().slice(0, 4)
   };
 }
 
@@ -91,6 +91,34 @@ async function getTasks() {
   return [];
 }
 
+async function deleteTask(taskId) {
+  const tasks = await getTasks();
+  const newTasks = tasks.filter(({ id }) => id !== taskId);
+  await setTasks(newTasks);
+}
+
+async function stopTask(taskId) {
+  const tasks = await getTasks();
+  const newTasks = tasks.map(task => {
+    if (task.id === taskId) {
+      task.stop = true;
+    }
+    return task;
+  });
+  await setTasks(newTasks);
+}
+
+async function resumeTask(taskId) {
+  const tasks = await getTasks();
+  const newTasks = tasks.map(task => {
+    if (task.id === taskId) {
+      task.stop = false;
+    }
+    return task;
+  });
+  await setTasks(newTasks);
+}
+
 async function setTasks(tasks) {
   await writeTasks(tasks);
 }
@@ -102,4 +130,12 @@ function init(tasksPath) {
   tasksFilePath = tasksPath;
 }
 
-module.exports = { init, getTasks, addTask, setTasks };
+module.exports = {
+  init,
+  getTasks,
+  addTask,
+  setTasks,
+  deleteTask,
+  stopTask,
+  resumeTask
+};

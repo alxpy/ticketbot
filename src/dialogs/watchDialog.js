@@ -140,16 +140,16 @@ class WatchDialog {
       ];
     });
 
-    inlineKeyboard.unshift([
-      {
-        text: "Выбрадь взе поезда",
-        callback_data: JSON.stringify({
-          dialog: "watch",
-          action: "train",
-          value: "*"
-        })
-      }
-    ]);
+    // inlineKeyboard.unshift([
+    //   {
+    //     text: "Выбрадь взе поезда",
+    //     callback_data: JSON.stringify({
+    //       dialog: "watch",
+    //       action: "train",
+    //       value: "*"
+    //     })
+    //   }
+    // ]);
 
     await cmd("sendMessage", {
       chat_id: this.chatId,
