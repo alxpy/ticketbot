@@ -1,12 +1,5 @@
 const { cmd, deleteMessage } = require("../telegramAPI");
-const { suggestCity, checkTrain } = require("../govAPI");
 const { getTasks, deleteTask, stopTask, resumeTask } = require("../task");
-
-const STAGE0_QUESTION = "Отведь мне, откуда будем ехадь?";
-const STAGE1_QUESTION = "Выбериде конгредный пункт:";
-const STAGE2_QUESTION = "Отведь мне, куда будем ехадь?";
-const STAGE4_QUESTION = "Отведь мне, Когда будем ехадь? Формат - ГГГГ-ММ-ДД";
-const STAGE5_QUESTION = "Выбериде боизд:";
 
 class TaskListDialog {
   constructor(chatId, resultCb) {
