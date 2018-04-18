@@ -19,7 +19,7 @@ class TaskListDialog {
       const inlineKeyboard = chatTasks.map((task, i) => {
         return [
           {
-            text: `${i}. ${task.options.trains.join(", ")}`,
+            text: `🚂 ${task.options.trains.join(", ")} на ${task.date}`,
             callback_data: JSON.stringify({
               dialog: "list",
               action: "select",
@@ -30,7 +30,7 @@ class TaskListDialog {
       });
       await cmd("sendMessage", {
         chat_id: this.chatId,
-        text: `Ищем такие поезда:`,
+        text: `Ищем такое:`,
         reply_markup: JSON.stringify({ inline_keyboard: inlineKeyboard })
       });
       this.stage = 1;

@@ -66,26 +66,22 @@ async function clearTaskList(message) {
 }
 
 async function sendTicketMessage(task, trainData) {
+  const inlineKeyboard = trainData.types.map(t => {
+    return [
+      {
+        text: `🔗 Купить '${t.title}' - ${t.places}`,
+        url: ticketPlaceLink(task, trainData.num, t.id)
+      }
+    ];
+  });
+
   await cmd("sendMessage", {
     chat_id: task.chatId,
-    parse_mode: "HTML",
-    text: `
-<b>Ездь мезда!!!</b>
-<b>${trainData.num} ${trainData.from.station} - ${trainData.to.station} ${
-      task.date
-    }</b>
-${trainData.types
-      .map(
-        t =>
-          `${t.title} - ${t.places} <a href="${ticketPlaceLink(
-            task,
-            trainData.num,
-            t.id
-          )}">КУБИДЬ!</a>`
-      )
-      .join("\n")}
-<a href="${ticketLink(task)}">КУБИДЬ БИЛЕД!</a>
-    `
+    parse_mode: "Markdown",
+    text: `*ЕЗДЬ МЕЗДА!!!* 😀�
+📅 *${task.date}*
+🚂 *${trainData.num}* _${trainData.from.station} - ${trainData.to.station}_`,
+    reply_markup: JSON.stringify({ inline_keyboard: inlineKeyboard })
   });
 }
 
@@ -133,7 +129,7 @@ async function hasNoTrain(task) {
     if (ticketMsg.hasTickets) {
       await cmd("sendMessage", {
         chat_id: chatId,
-        text: `Уже мезд на ${task.options.trains.join(", ")} нет`
+        text: `😞 Уже мезд на 🚂 ${task.options.trains.join(", ")} нет 😞`
       });
     }
     ticketMsg.times = ticketMsg.times + 1;
