@@ -2,7 +2,7 @@ const { cmd } = require("./telegramAPI");
 const WatchDialog = require("./dialogs/watchDialog");
 const TaskListDialog = require("./dialogs/taskListDialog");
 const { addTask, getTasks, setTasks } = require("./task");
-const { ticketLink } = require("./govAPI");
+const { ticketLink, ticketPlaceLink } = require("./govAPI");
 
 async function hello(message) {
   const chatId = message.chat.id;
@@ -66,6 +66,7 @@ async function clearTaskList(message) {
 }
 
 async function sendTicketMessage(task, trainData) {
+  console.log(trainData);
   await cmd("sendMessage", {
     chat_id: task.chatId,
     parse_mode: "HTML",
@@ -74,7 +75,16 @@ async function sendTicketMessage(task, trainData) {
 <b>${trainData.num} ${trainData.from.station} - ${trainData.to.station} ${
       task.date
     }</b>
-${trainData.types.map(t => `${t.title} - ${t.places}`).join("\n")}
+${trainData.types
+      .map(
+        t =>
+          `${t.title} - ${t.places} <a href="${ticketPlaceLink(
+            task,
+            trainData.num,
+            t.id
+          )}">КУБИДЬ!</a>`
+      )
+      .join("\n")}
 <a href="${ticketLink(task)}">КУБИДЬ БИЛЕД!</a>
     `
   });

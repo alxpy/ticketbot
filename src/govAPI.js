@@ -36,4 +36,15 @@ function ticketLink(ticket) {
     ticket.to
   }&date=${ticket.date}&time=${encodeURIComponent(ticket.time)}&url=train-list`;
 }
-module.exports = { suggestCity, checkTrain, ticketLink };
+
+function ticketPlaceLink(ticket, trainNum, type) {
+  return `https://booking.uz.gov.ua/ru/?from=${ticket.from}&to=${
+    ticket.to
+  }&date=${ticket.date}&time=${encodeURIComponent(
+    ticket.time
+  )}&train=${encodeURIComponent(trainNum)}&wagon_type_id=${encodeURIComponent(
+    type
+  )}&url=train-wagons`;
+}
+
+module.exports = { suggestCity, checkTrain, ticketLink, ticketPlaceLink };
