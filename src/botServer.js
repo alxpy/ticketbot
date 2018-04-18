@@ -18,6 +18,10 @@ const {
 const { checkTrain } = require("./govAPI");
 const { init } = require("./task");
 
+function isValidUser(username) {
+  return config.botServer.whitelist.includes(username);
+}
+
 const server = micro(async (req, res) => {
   const method = req.method;
   const url = req.url;
@@ -26,7 +30,7 @@ const server = micro(async (req, res) => {
     const data = await micro.json(req);
     if (url === "/new_message") {
       console.log(`new message ${JSON.stringify(data)}`);
-      if (data.message) {
+      if (data.message && isValidUser(data.message.from.username)) {
         const text = data.message.text;
         if (text && text.startsWith("/hello")) {
           await hello(data.message);
@@ -47,7 +51,10 @@ const server = micro(async (req, res) => {
           await handleDialog(data.message);
         }
       }
-      if (data.callback_query) {
+      if (
+        data.callback_query &&
+        isValidUser(data.callback_query.from.username)
+      ) {
         await handleDialog(
           data.callback_query.message,
           JSON.parse(data.callback_query.data)
