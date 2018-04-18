@@ -5,8 +5,10 @@ function schedule(cb, time) {
   return setInterval(async () => {
     const tasks = await getTasks();
     if (tasks.length) {
-      await cb(tasks[idx]);
-      if (idx === tasks.length - 1) {
+      if (tasks[idx]) {
+        await cb(tasks[idx]);
+      }
+      if (idx >= tasks.length - 1) {
         idx = 0;
       } else {
         idx = idx + 1;
