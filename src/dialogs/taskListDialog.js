@@ -5,6 +5,7 @@ function short(name) {
   if (name.length > 7) {
     return `${name.slice(0, 6)}...`;
   }
+  return name;
 }
 class TaskListDialog {
   constructor(chatId, resultCb) {
