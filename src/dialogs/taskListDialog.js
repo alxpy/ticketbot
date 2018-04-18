@@ -51,6 +51,9 @@ class TaskListDialog {
       this.data.selectedTask = data.value;
     }
     const task = this.tasks.find(t => t.id === this.data.selectedTask);
+    if (!task) {
+      return;
+    }
     deleteMessage(this.chatId, message.message_id);
     const inlineKeyboard = [
       [

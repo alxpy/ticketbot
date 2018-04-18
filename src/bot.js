@@ -66,7 +66,6 @@ async function clearTaskList(message) {
 }
 
 async function sendTicketMessage(task, trainData) {
-  console.log(trainData);
   await cmd("sendMessage", {
     chat_id: task.chatId,
     parse_mode: "HTML",
