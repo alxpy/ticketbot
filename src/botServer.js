@@ -27,14 +27,16 @@ async function informInvalidUser(data) {
   if (data.message && !isValidUser(data.message.from.username)) {
     await cmd("sendMessage", {
       chat_id: data.message.chat.id,
-      text: `Я тебе не подчиняюзь @${data.message.from.username}`,
+      text: `Я тебе не подчиняюзь ${data.message.from.username ||
+        data.message.from.first_name}`,
       reply_to_message_id: data.message.message_id
     });
   }
   if (data.callback_query && !isValidUser(data.callback_query.from.username)) {
     await cmd("sendMessage", {
       chat_id: data.callback_query.message.chat.id,
-      text: `Я тебе не подчиняюзь @${data.callback_query.from.username}`
+      text: `Я тебе не подчиняюзь ${data.callback_query.from.username ||
+        data.callback_query.from.first_name}`
     });
   }
 }
