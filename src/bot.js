@@ -23,6 +23,8 @@ async function watch(message) {
     }
     addTask({
       from: args.from,
+      fromTitle: args.fromTitle,
+      toTitle: args.toTitle,
       to: args.to,
       date: args.date,
       chatId: args.chatId,

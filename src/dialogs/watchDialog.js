@@ -111,12 +111,16 @@ class WatchDialog {
   }
 
   async stage5(msg) {
+    if (msg.reply_to_message.text !== STAGE4_QUESTION) {
+      return;
+    }
     this.data.date = msg.text;
     const result = await checkTrain({
       from: this.data.from,
       to: this.data.to,
       date: this.data.date
     });
+    this.trainCache = result.data.list;
     if (result.data.list.length === 0) {
       await cmd("sendMessage", {
         chat_id: this.chatId,
@@ -140,17 +144,6 @@ class WatchDialog {
       ];
     });
 
-    // inlineKeyboard.unshift([
-    //   {
-    //     text: "Выбрадь взе поезда",
-    //     callback_data: JSON.stringify({
-    //       dialog: "watch",
-    //       action: "train",
-    //       value: "*"
-    //     })
-    //   }
-    // ]);
-
     await cmd("sendMessage", {
       chat_id: this.chatId,
       text: STAGE5_QUESTION,
@@ -166,8 +159,17 @@ class WatchDialog {
     if (data.value) {
       this.data.options.trains = [data.value];
     }
+    let fromTitle = this.data.rawFrom;
+    let toTitle = this.data.rawTo;
+    const cacheTrain = this.trainCache.find(({ num }) => num === data.value);
+    if (cacheTrain) {
+      fromTitle = cacheTrain.from.stationTrain;
+      toTitle = cacheTrain.to.stationTrain;
+    }
     this.resultCb(null, {
       from: this.data.from,
+      fromTitle: fromTitle,
+      toTitle: toTitle,
       to: this.data.to,
       date: this.data.date,
       chatId: this.chatId,

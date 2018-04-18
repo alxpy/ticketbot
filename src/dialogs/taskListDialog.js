@@ -1,6 +1,11 @@
 const { cmd, deleteMessage } = require("../telegramAPI");
 const { getTasks, deleteTask, stopTask, resumeTask } = require("../task");
 
+function short(name) {
+  if (name.length > 7) {
+    return `${name.slice(0, 6)}...`;
+  }
+}
 class TaskListDialog {
   constructor(chatId, resultCb) {
     this.chatId = chatId;
@@ -19,7 +24,9 @@ class TaskListDialog {
       const inlineKeyboard = chatTasks.map((task, i) => {
         return [
           {
-            text: `🚂 ${task.options.trains.join(", ")} на ${task.date}`,
+            text: `🚂 ${task.options.trains.join(", ")} (${short(
+              task.fromTitle
+            )}-${short(task.toTitle)}) ${task.date}`,
             callback_data: JSON.stringify({
               dialog: "list",
               action: "select",

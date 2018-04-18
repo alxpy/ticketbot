@@ -4,10 +4,12 @@ const path = require("path");
 const mkdirp = require("mkdirp");
 let tasksFilePath = null;
 
-function newTask(from, to, date, chatId, time, options) {
+function newTask(from, fromTitle, to, toTitle, date, chatId, time, options) {
   return {
     from,
+    fromTitle,
     to,
+    toTitle,
     date,
     chatId,
     time: time || "00:00",
@@ -61,7 +63,16 @@ async function writeTasks(tasks) {
   });
 }
 
-async function addTask({ from, to, date, chatId, time, options }) {
+async function addTask({
+  from,
+  fromTitle,
+  to,
+  toTitle,
+  date,
+  chatId,
+  time,
+  options
+}) {
   if (!from) {
     throw new Error("from is required");
   }
@@ -74,7 +85,16 @@ async function addTask({ from, to, date, chatId, time, options }) {
   if (!chatId) {
     throw new Error("chatId is required");
   }
-  const task = newTask(from, to, date, chatId, time, options);
+  const task = newTask(
+    from,
+    fromTitle || "",
+    to,
+    toTitle || "",
+    date,
+    chatId,
+    time,
+    options
+  );
   const storedTasks = await getTasks();
   storedTasks.push(task);
   await writeTasks(storedTasks);
