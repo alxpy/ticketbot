@@ -5,6 +5,7 @@ const path = require("path");
 const { initConfig } = require("./config");
 const config = initConfig(path.resolve(__dirname, `../${process.argv[2]}`));
 const { schedule } = require("./scheduler");
+const { cmd } = require("./telegramAPI");
 const {
   hello,
   watch,
@@ -20,6 +21,22 @@ const { init } = require("./task");
 
 function isValidUser(username) {
   return config.botServer.whitelist.includes(username);
+}
+
+async function informInvalidUser(data) {
+  if (data.message && !isValidUser(data.message.from.username)) {
+    await cmd("sendMessage", {
+      chat_id: data.message.chat.id,
+      text: `Я тебе не подчиняюзь @${data.message.from.username}`,
+      reply_to_message_id: data.message.message_id
+    });
+  }
+  if (data.callback_query && !isValidUser(data.callback_query.from.username)) {
+    await cmd("sendMessage", {
+      chat_id: data.callback_query.message.chat.id,
+      text: `Я тебе не подчиняюзь @${data.callback_query.from.username}`
+    });
+  }
 }
 
 const server = micro(async (req, res) => {
@@ -60,6 +77,7 @@ const server = micro(async (req, res) => {
           JSON.parse(data.callback_query.data)
         );
       }
+      await informInvalidUser(data);
       res.end();
       return;
     }
