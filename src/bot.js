@@ -78,7 +78,7 @@ async function sendTicketMessage(task, trainData) {
   await cmd("sendMessage", {
     chat_id: task.chatId,
     parse_mode: "Markdown",
-    text: `*ЕЗДЬ МЕЗДА!!!* 😀�
+    text: `*ЕЗДЬ МЕЗДА!!!* 😀
 📅 *${task.date}*
 🚂 *${trainData.num}* _${trainData.from.station} - ${trainData.to.station}_`,
     reply_markup: JSON.stringify({ inline_keyboard: inlineKeyboard })
