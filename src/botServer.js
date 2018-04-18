@@ -68,11 +68,13 @@ async function pingTrain(task) {
   }
   const result = await checkTrain(task);
   const train = task.options.trains[0];
-  const resultTrain = result.data.list.find(({ num }) => num === train);
-  if (resultTrain.types.length) {
-    hasTrain(task, resultTrain);
-  } else {
-    hasNoTrain(task);
+  if (result && result.data && result.data.list) {
+    const resultTrain = result.data.list.find(({ num }) => num === train);
+    if (resultTrain.types.length) {
+      hasTrain(task, resultTrain);
+    } else {
+      hasNoTrain(task);
+    }
   }
 }
 

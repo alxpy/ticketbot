@@ -124,7 +124,7 @@ async function hasNoTrain(task) {
     if (ticketMsg.hasTickets) {
       await cmd("sendMessage", {
         chat_id: chatId,
-        text: `Уже мезд на ${task.trains.join(", ")} нет`
+        text: `Уже мезд на ${task.options.trains.join(", ")} нет`
       });
     }
     ticketMsg.times = ticketMsg.times + 1;
