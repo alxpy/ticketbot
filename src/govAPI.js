@@ -29,7 +29,8 @@ async function checkTrain(trainData) {
       to: trainData.to,
       date: trainData.date,
       time: trainData.time || "00:00"
-    }
+    },
+    timeout: 2000
   };
   if (proxy) {
     options.proxy = proxy;
