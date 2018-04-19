@@ -15,6 +15,7 @@
   "dependencies": {
     "dotenv": "^5.0.1",
     "micro": "^9.1.4",
+    "ps-free-proxy-list": "^1.0.0",
     "request-promise": "^4.2.2",
     "uuid": "^3.2.1"
   },

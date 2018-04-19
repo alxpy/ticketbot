@@ -6,7 +6,7 @@ function schedule(cb, time) {
     const tasks = await getTasks();
     if (tasks.length) {
       if (tasks[idx]) {
-        await cb(tasks[idx]);
+        cb(tasks[idx]);
       }
       if (idx >= tasks.length - 1) {
         idx = 0;

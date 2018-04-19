@@ -1,14 +1,18 @@
 const rp = require("request-promise");
 const API = "https://booking.uz.gov.ua/ru";
+const { getProxy, init } = require("./proxy");
+
+init();
 
 const suggestCityCache = {};
+
+let proxy;
 
 async function suggestCity(term) {
   if (suggestCityCache[term]) {
     return suggestCityCache[term];
   }
   const uri = `${API}/train_search/station/?term=${encodeURIComponent(term)}`;
-  console.log(uri);
   const options = { method: "GET", uri };
   const result = await rp(options);
   const jsonResult = JSON.parse(result);
@@ -27,8 +31,18 @@ async function checkTrain(trainData) {
       time: trainData.time || "00:00"
     }
   };
-  const result = await rp(options);
-  return JSON.parse(result);
+  if (proxy) {
+    options.proxy = proxy;
+  } else {
+    proxy = await getProxy();
+    options.proxy = proxy;
+  }
+  try {
+    const result = await rp(options);
+    return JSON.parse(result);
+  } catch (err) {
+    proxy = await getProxy();
+  }
 }
 
 function ticketLink(ticket) {
