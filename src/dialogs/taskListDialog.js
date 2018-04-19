@@ -2,7 +2,7 @@ const { cmd, deleteMessage } = require("../telegramAPI");
 const { getTasks, deleteTask, stopTask, resumeTask } = require("../task");
 
 function short(name) {
-  if (name.length > 7) {
+  if (name && name.length > 7) {
     return `${name.slice(0, 6)}...`;
   }
   return name;
@@ -20,6 +20,7 @@ class TaskListDialog {
   async stage0() {
     const tasks = await getTasks();
     this.tasks = tasks;
+
     const chatTasks = tasks.filter(task => task.chatId === this.chatId);
     if (chatTasks.length) {
       const inlineKeyboard = chatTasks.map((task, i) => {
