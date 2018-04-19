@@ -20,7 +20,7 @@ async function suggestCity(term) {
   return jsonResult;
 }
 
-async function checkTrain(trainData) {
+async function checkTrain(trainData, useProxy = true) {
   const options = {
     method: "POST",
     uri: `${API}/train_search/`,
@@ -32,11 +32,13 @@ async function checkTrain(trainData) {
     },
     timeout: 2000
   };
-  if (proxy) {
-    options.proxy = proxy;
-  } else {
-    proxy = await getProxy();
-    options.proxy = proxy;
+  if (useProxy) {
+    if (proxy) {
+      options.proxy = proxy;
+    } else {
+      proxy = await getProxy();
+      options.proxy = proxy;
+    }
   }
   try {
     const result = await rp(options);

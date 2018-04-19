@@ -115,11 +115,14 @@ class WatchDialog {
       return;
     }
     this.data.date = msg.text;
-    const result = await checkTrain({
-      from: this.data.from,
-      to: this.data.to,
-      date: this.data.date
-    });
+    const result = await checkTrain(
+      {
+        from: this.data.from,
+        to: this.data.to,
+        date: this.data.date
+      },
+      false
+    );
     this.trainCache = result.data.list;
     if (result.data.list.length === 0) {
       await cmd("sendMessage", {
