@@ -32,13 +32,13 @@ async function informInvalidUser(data) {
       reply_to_message_id: data.message.message_id
     });
   }
-  if (data.callback_query && !isValidUser(data.callback_query.from.username)) {
-    await cmd("sendMessage", {
-      chat_id: data.callback_query.message.chat.id,
-      text: `Я тебе не подчиняюзь ${data.callback_query.from.username ||
-        data.callback_query.from.first_name}`
-    });
-  }
+  // if (data.callback_query && !isValidUser(data.callback_query.from.username)) {
+  //   await cmd("sendMessage", {
+  //     chat_id: data.callback_query.message.chat.id,
+  //     text: `Я тебе не подчиняюзь ${data.callback_query.from.username ||
+  //       data.callback_query.from.first_name}`
+  //   });
+  // }
 }
 
 const server = micro(async (req, res) => {
