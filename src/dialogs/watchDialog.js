@@ -123,6 +123,7 @@ class WatchDialog {
       },
       false
     );
+
     this.trainCache = result.data.list;
     if (result.data.list.length === 0) {
       await cmd("sendMessage", {

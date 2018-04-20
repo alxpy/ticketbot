@@ -1,12 +1,8 @@
 const rp = require("request-promise");
+const { tryReq } = require("proxymon");
 const API = "https://booking.uz.gov.ua/ru";
-const { getProxy, init } = require("./proxy");
-
-init();
 
 const suggestCityCache = {};
-
-let proxy;
 
 async function suggestCity(term) {
   if (suggestCityCache[term]) {
@@ -32,20 +28,13 @@ async function checkTrain(trainData, useProxy = true) {
     },
     timeout: 2000
   };
+  let result = null;
   if (useProxy) {
-    if (proxy) {
-      options.proxy = proxy;
-    } else {
-      proxy = await getProxy();
-      options.proxy = proxy;
-    }
+    result = await tryReq(options);
+  } else {
+    result = await rp(options);
   }
-  try {
-    const result = await rp(options);
-    return JSON.parse(result);
-  } catch (err) {
-    proxy = await getProxy();
-  }
+  return JSON.parse(result);
 }
 
 function ticketLink(ticket) {

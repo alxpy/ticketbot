@@ -39,14 +39,12 @@ async function handleDialog(message, data) {
   const chatId = message.chat.id;
   const dialog = dialogs[chatId];
   if (!dialog || (dialog && dialog.done)) return;
-  console.log(dialog.stage);
   await dialog[`stage${dialog.stage}`](message, data);
 }
 
 async function taskList(message) {
   const chatId = message.chat.id;
   dialogs[chatId] = new TaskListDialog(chatId, options => {
-    console.log("task list dialog", options);
     delete dialogs[chatId];
   });
 }
