@@ -111,3 +111,8 @@ server.listen(port, host, () => {
   init(config.botServer.taskFile);
   schedule(async task => await pingTrain(task), config.botServer.timeout);
 });
+
+process.on("uncaughtException", function(err) {
+  console.error(err.stack);
+  console.log("Node NOT Exiting...");
+});
