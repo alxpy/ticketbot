@@ -9,6 +9,6 @@
     "port": "3001",
     "taskFile": ".cache/taskCache",
     "timeout": 700,
-    "whitelist": ["amostovenko"]
+    "whitelist": ["amostovenko", "alxpy"]
   }
 }
